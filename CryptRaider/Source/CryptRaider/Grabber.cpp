@@ -71,17 +71,24 @@ void UGrabber::Grab()
 		return;
 	}
 
-	FVector start = GetComponentLocation();
-	FVector end = start + GetForwardVector() * MaxGrabDistance;
-
 	FHitResult hit;
-	FCollisionShape sphere = FCollisionShape::MakeSphere(GrabRadius);
-
-	bool hasHit = GetWorld()->SweepSingleByChannel(hit, start, end, FQuat::Identity, ECC_GameTraceChannel2, sphere);
+	bool hasHit = GetGrabbableInReach(hit);
 
 	if (hasHit)
 	{
 		PhysicsHandle->GrabComponentAtLocationWithRotation(hit.GetComponent(), NAME_None, hit.ImpactPoint, GetComponentRotation());
 	}
+}
+
+bool UGrabber::GetGrabbableInReach(FHitResult& OutHitResult) const
+{
+	FVector start = GetComponentLocation();
+	FVector end = start + GetForwardVector() * MaxGrabDistance;
+
+	FCollisionShape sphere = FCollisionShape::MakeSphere(GrabRadius);
+
+	bool hasHit = GetWorld()->SweepSingleByChannel(OutHitResult, start, end, FQuat::Identity, ECC_GameTraceChannel2, sphere);
+
+	return hasHit;
 }
 
