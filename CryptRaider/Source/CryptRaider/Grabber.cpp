@@ -21,6 +21,9 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+
+
 	// ...
 	
 }
@@ -32,6 +35,16 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 
+	
+
+	if (PhysicsHandle == NULL)
+	{
+		return;
+	}
+
+	FVector targetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
+
+	PhysicsHandle->SetTargetLocationAndRotation(targetLocation, GetComponentRotation());
 
 	// ...
 }
@@ -42,10 +55,14 @@ void UGrabber::Release()
 
 void UGrabber::Grab()
 {
+
+	if (PhysicsHandle == NULL)
+	{
+		return;
+	}
+
 	FVector start = GetComponentLocation();
 	FVector end = start + GetForwardVector() * MaxGrabDistance;
-
-	DrawDebugLine(GetWorld(), start, end, FColor::Red);
 
 	FHitResult hit;
 	FCollisionShape sphere = FCollisionShape::MakeSphere(GrabRadius);
@@ -54,7 +71,7 @@ void UGrabber::Grab()
 
 	if (hasHit)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Actor hit: %s"), *hit.GetActor()->GetActorNameOrLabel());
+		PhysicsHandle->GrabComponentAtLocationWithRotation(hit.GetComponent(), NAME_None, hit.ImpactPoint, GetComponentRotation());
 	}
 }
 
