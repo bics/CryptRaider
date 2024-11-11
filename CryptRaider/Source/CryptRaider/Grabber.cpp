@@ -31,11 +31,30 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+
+
+	// ...
+}
+
+void UGrabber::Release()
+{
+}
+
+void UGrabber::Grab()
+{
 	FVector start = GetComponentLocation();
 	FVector end = start + GetForwardVector() * MaxGrabDistance;
 
 	DrawDebugLine(GetWorld(), start, end, FColor::Red);
 
-	// ...
+	FHitResult hit;
+	FCollisionShape sphere = FCollisionShape::MakeSphere(GrabRadius);
+
+	bool hasHit = GetWorld()->SweepSingleByChannel(hit, start, end, FQuat::Identity, ECC_GameTraceChannel2, sphere);
+
+	if (hasHit)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Actor hit: %s"), *hit.GetActor()->GetActorNameOrLabel());
+	}
 }
 
