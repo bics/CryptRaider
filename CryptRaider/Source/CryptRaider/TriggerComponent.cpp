@@ -21,6 +21,13 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	AActor* actor = GetActor();
 	if (actor != nullptr)
 	{
+		UPrimitiveComponent* component = Cast<UPrimitiveComponent>(actor->GetRootComponent());
+		if (component != NULL)
+		{
+			component->SetSimulatePhysics(false);
+		}
+
+		actor->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
 		Mover->SetShouldMove(true);
 	}
 	else
